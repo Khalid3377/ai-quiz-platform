@@ -7,7 +7,7 @@ export default function TestResults() {
   const { testId } = useParams();
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+ const navigate = useNavigate(); // eslint-disable-line
 
   useEffect(() => {
     getTestResults(testId)

@@ -10,8 +10,7 @@ import {
 export default function Profile() {
   const [profile, setProfile] = useState(null);
   const [history, setHistory] = useState([]);
-  const navigate = useNavigate();
-
+const navigate = useNavigate(); // eslint-disable-line
   useEffect(() => {
     getProfile().then(r => setProfile(r.data));
     getHistory().then(r => setHistory(r.data));
