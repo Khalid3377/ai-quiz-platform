@@ -3,15 +3,24 @@ import { useNavigate } from 'react-router-dom';
 import { generateFromPDF } from '../services/api';
 import Navbar from '../components/Navbar';
 
+const copyToClipboard = (text) => {
+  const el = document.createElement('textarea');
+  el.value = text;
+  document.body.appendChild(el);
+  el.select();
+  document.execCommand('copy');
+  document.body.removeChild(el);
+};
+
 export default function PDFQuiz() {
-  const [file,         setFile]         = useState(null);
-  const [difficulty,   setDifficulty]   = useState('Medium');
-  const [numQ,         setNumQ]         = useState(10);
-  const [forStudents,  setForStudents]  = useState(false);
-  const [loading,      setLoading]      = useState(false);
-  const [error,        setError]        = useState('');
-  const [dragOver,     setDragOver]     = useState(false);
-  const [testInfo,     setTestInfo]     = useState(null);
+  const [file,        setFile]        = useState(null);
+  const [difficulty,  setDifficulty]  = useState('Medium');
+  const [numQ,        setNumQ]        = useState(10);
+  const [forStudents, setForStudents] = useState(false);
+  const [loading,     setLoading]     = useState(false);
+  const [error,       setError]       = useState('');
+  const [dragOver,    setDragOver]    = useState(false);
+  const [testInfo,    setTestInfo]    = useState(null);
   const navigate = useNavigate();
 
   const handleFile = (f) => {
@@ -48,11 +57,11 @@ export default function PDFQuiz() {
         <div style={{ fontSize: '56px', marginBottom: '16px' }}>✅</div>
         <h2 style={{
           fontFamily: 'Syne, sans-serif', fontSize: '24px',
-          marginBottom: '8px',
+          color: '#fff', marginBottom: '8px',
         }}>PDF quiz created!</h2>
-        <p style={{
-          color: 'rgba(255,255,255,0.4)', fontSize: '13px', marginBottom: '28px'
-        }}>Share this Test ID with your students</p>
+        <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px', marginBottom: '28px' }}>
+          Share this Test ID with your students
+        </p>
 
         <div style={{
           background: 'rgba(124,58,237,0.1)',
@@ -80,7 +89,7 @@ export default function PDFQuiz() {
             {window.location.origin}/join/{testInfo.testId}
           </p>
           <button onClick={() => {
-            navigator.clipboard.writeText(`${window.location.origin}/join/${testInfo.testId}`);
+            copyToClipboard(`${window.location.origin}/join/${testInfo.testId}`);
             alert('Link copied!');
           }} style={{
             marginTop: '10px', padding: '6px 16px', borderRadius: '8px',
@@ -119,11 +128,11 @@ export default function PDFQuiz() {
       <div style={{ maxWidth: '480px', margin: '0 auto' }}>
         <h2 style={{
           fontFamily: 'Syne, sans-serif', fontSize: '28px',
-          fontWeight: '800', marginBottom: '6px',
+          fontWeight: '800', color: '#fff', marginBottom: '6px',
         }}>PDF quiz generation</h2>
-        <p style={{
-          color: 'rgba(255,255,255,0.4)', fontSize: '13px', marginBottom: '28px'
-        }}>Upload your notes — AI creates a quiz instantly</p>
+        <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px', marginBottom: '28px' }}>
+          Upload your notes — AI creates a quiz instantly
+        </p>
 
         {error && (
           <div style={{
@@ -140,22 +149,22 @@ export default function PDFQuiz() {
           onDragLeave={() => setDragOver(false)}
           onClick={() => document.getElementById('pdf-input').click()}
           style={{
-            border:       `2px dashed ${dragOver ? '#7c3aed' : file ? '#34d399' : 'rgba(255,255,255,0.12)'}`,
-            borderRadius: '16px',
-            padding:      '40px 20px',
-            textAlign:    'center',
-            cursor:       'pointer',
-            marginBottom: '20px',
-            background:   dragOver ? 'rgba(124,58,237,0.06)'
+            border: `2px dashed ${dragOver ? '#7c3aed' : file ? '#34d399' : 'rgba(255,255,255,0.12)'}`,
+            borderRadius: '16px', padding: '40px 20px', textAlign: 'center',
+            cursor: 'pointer', marginBottom: '20px',
+            background: dragOver ? 'rgba(124,58,237,0.06)'
               : file ? 'rgba(52,211,153,0.04)' : 'rgba(255,255,255,0.02)',
-            transition:   'all 0.2s',
+            transition: 'all 0.2s',
           }}>
-          <input id="pdf-input" type="file" accept=".pdf" style={{ display: 'none' }}
+          <input id="pdf-input" type="file" accept=".pdf"
+            style={{ display: 'none' }}
             onChange={e => handleFile(e.target.files[0])} />
           {file ? (
             <>
               <div style={{ fontSize: '36px', marginBottom: '8px' }}>✅</div>
-              <p style={{ color: '#34d399', fontWeight: '500', fontSize: '14px' }}>{file.name}</p>
+              <p style={{ color: '#34d399', fontWeight: '500', fontSize: '14px' }}>
+                {file.name}
+              </p>
               <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '12px', marginTop: '4px' }}>
                 {(file.size / 1024 / 1024).toFixed(2)} MB · Click to change
               </p>
@@ -174,6 +183,7 @@ export default function PDFQuiz() {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+
           {/* Difficulty */}
           <div>
             <label style={{
@@ -183,8 +193,7 @@ export default function PDFQuiz() {
             <div style={{ display: 'flex', gap: '8px' }}>
               {['Easy', 'Medium', 'Hard'].map(d => (
                 <button key={d} onClick={() => setDifficulty(d)} style={{
-                  flex: 1, padding: '10px', borderRadius: '10px',
-                  border: '1px solid',
+                  flex: 1, padding: '10px', borderRadius: '10px', border: '1px solid',
                   borderColor: difficulty === d
                     ? d === 'Easy' ? 'rgba(52,211,153,0.5)'
                     : d === 'Hard' ? 'rgba(248,113,113,0.5)' : 'rgba(251,191,36,0.5)'
@@ -197,7 +206,7 @@ export default function PDFQuiz() {
                     ? d === 'Easy' ? '#34d399' : d === 'Hard' ? '#f87171' : '#fbbf24'
                     : 'rgba(255,255,255,0.4)',
                   fontSize: '13px', fontWeight: '500',
-                  cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', transition: 'all 0.2s',
+                  cursor: 'pointer', fontFamily: 'DM Sans, sans-serif',
                 }}>{d}</button>
               ))}
             </div>
@@ -225,7 +234,9 @@ export default function PDFQuiz() {
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           }}>
             <div>
-              <p style={{ fontSize: '13px', fontWeight: '500' }}>Assign to students</p>
+              <p style={{ fontSize: '13px', fontWeight: '500', color: '#fff' }}>
+                Assign to students
+              </p>
               <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', marginTop: '2px' }}>
                 Generates a Test ID to share
               </p>

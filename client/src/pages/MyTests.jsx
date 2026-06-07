@@ -3,6 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
 
+const copyToClipboard = (text) => {
+  const el = document.createElement('textarea');
+  el.value = text;
+  document.body.appendChild(el);
+  el.select();
+  document.execCommand('copy');
+  document.body.removeChild(el);
+};
+
 export default function MyTests() {
   const [tests,   setTests]   = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,8 +22,9 @@ export default function MyTests() {
   const loadMyTests = async () => {
     try {
       const token = localStorage.getItem('token');
+      const base  = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
       const { data } = await axios.get(
-        'http://localhost:5000/api/quizzes/my-tests',
+        `${base}/quizzes/my-tests`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setTests(data);
@@ -54,7 +64,7 @@ export default function MyTests() {
         <div style={{ marginBottom: '28px' }}>
           <h1 style={{
             fontFamily: 'Syne, sans-serif', fontSize: '28px',
-            fontWeight: '800', marginBottom: '4px',
+            fontWeight: '800', marginBottom: '4px', color: '#fff',
           }}>My assigned tests</h1>
           <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px' }}>
             Tests you created for students
@@ -63,11 +73,9 @@ export default function MyTests() {
 
         {tests.length === 0 && (
           <div style={{
-            background:   'rgba(255,255,255,0.03)',
-            border:       '1px solid rgba(255,255,255,0.07)',
-            borderRadius: '16px',
-            padding:      '60px 20px',
-            textAlign:    'center',
+            background: 'rgba(255,255,255,0.03)',
+            border: '1px solid rgba(255,255,255,0.07)',
+            borderRadius: '16px', padding: '60px 20px', textAlign: 'center',
           }}>
             <p style={{ fontSize: '48px', marginBottom: '12px' }}>📋</p>
             <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '14px', marginBottom: '4px' }}>
@@ -88,10 +96,9 @@ export default function MyTests() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {tests.map(test => (
             <div key={test._id} style={{
-              background:   'rgba(255,255,255,0.03)',
-              border:       '1px solid rgba(255,255,255,0.07)',
-              borderRadius: '16px',
-              padding:      '20px',
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid rgba(255,255,255,0.07)',
+              borderRadius: '16px', padding: '20px',
             }}>
               {/* Header */}
               <div style={{
@@ -101,7 +108,7 @@ export default function MyTests() {
                 <div>
                   <h3 style={{
                     fontFamily: 'Syne, sans-serif', fontSize: '16px',
-                    fontWeight: '600', marginBottom: '4px',
+                    fontWeight: '600', marginBottom: '4px', color: '#fff',
                   }}>{test.title}</h3>
                   <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>
                     Created by {test.assignedBy} · {test.questions?.length} questions
@@ -120,14 +127,11 @@ export default function MyTests() {
 
               {/* Test ID */}
               <div style={{
-                background:   'rgba(124,58,237,0.08)',
-                border:       '1px solid rgba(124,58,237,0.2)',
-                borderRadius: '12px',
-                padding:      '14px 16px',
-                marginBottom: '12px',
-                display:      'flex',
-                alignItems:   'center',
-                justifyContent: 'space-between',
+                background: 'rgba(124,58,237,0.08)',
+                border: '1px solid rgba(124,58,237,0.2)',
+                borderRadius: '12px', padding: '14px 16px',
+                marginBottom: '12px', display: 'flex',
+                alignItems: 'center', justifyContent: 'space-between',
               }}>
                 <div>
                   <p style={{
@@ -135,15 +139,12 @@ export default function MyTests() {
                     marginBottom: '4px', letterSpacing: '0.06em',
                   }}>TEST ID</p>
                   <p style={{
-                    fontFamily:    'Syne, sans-serif',
-                    fontSize:      '22px',
-                    fontWeight:    '800',
-                    color:         '#a78bfa',
-                    letterSpacing: '0.1em',
+                    fontFamily: 'Syne, sans-serif', fontSize: '22px',
+                    fontWeight: '800', color: '#a78bfa', letterSpacing: '0.1em',
                   }}>{test.testId}</p>
                 </div>
                 <button onClick={() => {
-                  navigator.clipboard.writeText(test.testId);
+                  copyToClipboard(test.testId);
                   alert('Test ID copied!');
                 }} style={{
                   padding: '8px 14px', borderRadius: '8px',
@@ -156,15 +157,11 @@ export default function MyTests() {
 
               {/* Link */}
               <div style={{
-                background:   'rgba(255,255,255,0.02)',
-                border:       '1px solid rgba(255,255,255,0.06)',
-                borderRadius: '10px',
-                padding:      '10px 14px',
-                marginBottom: '14px',
-                display:      'flex',
-                alignItems:   'center',
-                justifyContent: 'space-between',
-                gap:          '12px',
+                background: 'rgba(255,255,255,0.02)',
+                border: '1px solid rgba(255,255,255,0.06)',
+                borderRadius: '10px', padding: '10px 14px',
+                marginBottom: '14px', display: 'flex',
+                alignItems: 'center', justifyContent: 'space-between', gap: '12px',
               }}>
                 <p style={{
                   fontSize: '11px', color: '#60a5fa',
@@ -173,9 +170,7 @@ export default function MyTests() {
                   {window.location.origin}/join/{test.testId}
                 </p>
                 <button onClick={() => {
-                  navigator.clipboard.writeText(
-                    `${window.location.origin}/join/${test.testId}`
-                  );
+                  copyToClipboard(`${window.location.origin}/join/${test.testId}`);
                   alert('Link copied!');
                 }} style={{
                   padding: '5px 10px', borderRadius: '6px',
