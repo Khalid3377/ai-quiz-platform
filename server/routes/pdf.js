@@ -106,25 +106,30 @@ ${limitedText}
 const User = require('../models/User');
 const user = await User.findById(req.user.id).select('name');
 
-let testId = null;
-if (assignToStudents === 'true') {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  testId = 'TEST-';
-  for (let i = 0; i < 5; i++) {
-    testId += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-}
-
-const quiz = await Quiz.create({
-  title:      `PDF Quiz — ${req.file.originalname} (${difficulty})`,
-  topic:      'PDF Upload',
+const quizData = {
+  title: `PDF Quiz — ${req.file.originalname} (${difficulty})`,
+  topic: 'PDF Upload',
   difficulty,
   questions,
-  createdBy:  req.user.id,
-  testId,
+  createdBy: req.user.id,
   isAssigned: assignToStudents === 'true',
   assignedBy: user?.name || 'Teacher',
-});
+};
+
+if (assignToStudents === 'true') {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let generatedTestId = 'TEST-';
+
+  for (let i = 0; i < 5; i++) {
+    generatedTestId += chars.charAt(
+      Math.floor(Math.random() * chars.length)
+    );
+  }
+
+  quizData.testId = generatedTestId;
+}
+
+const quiz = await Quiz.create(quizData);
 
       res.json(quiz);
 
