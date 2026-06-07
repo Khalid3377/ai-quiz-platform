@@ -52,19 +52,21 @@ correctAnswer is the index (0-3) of the correct option.`;
     const questions = JSON.parse(cleaned);
 
     const user   = await User.findById(req.user.id).select('name');
-    let testId   = null;
-    if (assignToStudents) testId = generateTestId();
+    const quizData = {
+  title: `${topic} (${difficulty})`,
+  topic,
+  difficulty,
+  questions,
+  createdBy: req.user.id,
+  isAssigned: assignToStudents,
+  assignedBy: user?.name || 'Teacher',
+};
 
-    const quiz = await Quiz.create({
-      title:      `${topic} (${difficulty})`,
-      topic,
-      difficulty,
-      questions,
-      createdBy:  req.user.id,
-      testId,
-      isAssigned: assignToStudents,
-      assignedBy: user?.name || 'Teacher',
-    });
+if (assignToStudents) {
+  quizData.testId = generateTestId();
+}
+
+const quiz = await Quiz.create(quizData);
 
     res.json(quiz);
   } catch (err) {
