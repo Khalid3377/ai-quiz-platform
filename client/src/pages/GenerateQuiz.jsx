@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { generateQuiz } from '../services/api';
 import Navbar from '../components/Navbar';
@@ -17,33 +17,24 @@ export default function GenerateQuiz() {
   const [difficulty,  setDifficulty]  = useState('Medium');
   const [numQ,        setNumQ]        = useState(10);
   const [forStudents, setForStudents] = useState(false);
-  const [timePerQ,    setTimePerQ]    = useState(30);
-  const [customTime,  setCustomTime]  = useState(false);
   const [loading,     setLoading]     = useState(false);
   const [error,       setError]       = useState('');
   const [testInfo,    setTestInfo]    = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!customTime) {
-      setTimePerQ(
-        difficulty === 'Easy' ? 20 :
-        difficulty === 'Hard' ? 45 : 30
-      );
-    }
-  }, [difficulty, customTime]);
+  
 
   const handleGenerate = async () => {
     if (!topic) return setError('Please enter a topic');
     setLoading(true);
     setError('');
     try {
-      const { data } = await generateQuiz({
-        topic, difficulty,
-        numQuestions:     numQ,
-        assignToStudents: forStudents,
-        timePerQuestion:  timePerQ,
-      });
+    const { data } = await generateQuiz({
+  topic,
+  difficulty,
+  numQuestions: numQ,
+  assignToStudents: forStudents,
+});
       if (forStudents && data.testId) setTestInfo(data);
       else navigate(`/quiz/${data._id}`);
     } catch {
@@ -80,13 +71,6 @@ export default function GenerateQuiz() {
         }}>
           <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', marginBottom: '8px' }}>
             TEST ID
-          </p>
-          <p style={{
-            fontFamily: 'Syne, sans-serif', fontSize: '36px',
-            fontWeight: '800', letterSpacing: '0.1em', color: '#a78bfa',
-          }}>{testInfo.testId}</p>
-          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', marginTop: '8px' }}>
-            ⏱ {testInfo.timePerQuestion}s per question
           </p>
         </div>
 
@@ -201,106 +185,7 @@ export default function GenerateQuiz() {
             </div>
           </div>
 
-          {/* Time per question */}
-          <div style={{
-            background: 'rgba(255,255,255,0.03)',
-            border: '1px solid rgba(255,255,255,0.07)',
-            borderRadius: '14px', padding: '16px',
-          }}>
-            <div style={{
-              display: 'flex', justifyContent: 'space-between',
-              alignItems: 'center', marginBottom: '14px',
-            }}>
-              <div>
-                <p style={{ fontSize: '13px', fontWeight: '500', color: '#fff' }}>
-                  ⏱ Time per question
-                </p>
-                <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', marginTop: '2px' }}>
-                  {customTime ? 'Custom time set' : `Auto: ${timePerQ}s (based on difficulty)`}
-                </p>
-              </div>
-              <button onClick={() => setCustomTime(!customTime)} style={{
-                padding: '5px 12px', borderRadius: '8px',
-                border: `1px solid ${customTime ? 'rgba(167,139,250,0.4)' : 'rgba(255,255,255,0.1)'}`,
-                background: customTime ? 'rgba(167,139,250,0.1)' : 'rgba(255,255,255,0.05)',
-                color: customTime ? '#a78bfa' : 'rgba(255,255,255,0.4)',
-                fontSize: '11px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif',
-              }}>
-                {customTime ? 'Using custom' : 'Customize'}
-              </button>
-            </div>
-
-            {/* Presets */}
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' }}>
-              {[
-                { label: '15s', value: 15 },
-                { label: '20s', value: 20 },
-                { label: '30s', value: 30 },
-                { label: '45s', value: 45 },
-                { label: '60s', value: 60 },
-                { label: '90s', value: 90 },
-                { label: '120s', value: 120 },
-              ].map(preset => (
-                <button key={preset.value}
-                  onClick={() => { setTimePerQ(preset.value); setCustomTime(true); }}
-                  style={{
-                    padding: '6px 12px', borderRadius: '8px', border: '1px solid',
-                    borderColor: timePerQ === preset.value
-                      ? 'rgba(167,139,250,0.5)' : 'rgba(255,255,255,0.1)',
-                    background: timePerQ === preset.value
-                      ? 'rgba(167,139,250,0.12)' : 'rgba(255,255,255,0.03)',
-                    color: timePerQ === preset.value ? '#a78bfa' : 'rgba(255,255,255,0.4)',
-                    fontSize: '12px', fontWeight: timePerQ === preset.value ? '600' : '400',
-                    cursor: 'pointer', fontFamily: 'DM Sans, sans-serif',
-                  }}>{preset.label}</button>
-              ))}
-            </div>
-
-            {/* Custom input */}
-            {customTime && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <input
-                  type="number" min="5" max="300" value={timePerQ}
-                  onChange={e => setTimePerQ(Number(e.target.value))}
-                  style={{
-                    ...inputStyle, width: '100px', textAlign: 'center',
-                    fontSize: '18px', fontFamily: 'Syne, sans-serif',
-                    fontWeight: '700', color: '#a78bfa',
-                  }}
-                />
-                <div>
-                  <p style={{ fontSize: '13px', color: '#fff' }}>seconds per question</p>
-                  <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', marginTop: '2px' }}>
-                    Total: ~{Math.ceil((timePerQ * numQ) / 60)} minutes
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Auto preview */}
-            {!customTime && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '4px' }}>
-                <div style={{
-                  width: '40px', height: '40px', borderRadius: '50%',
-                  border: `3px solid ${
-                    difficulty === 'Easy' ? 'rgba(52,211,153,0.4)' :
-                    difficulty === 'Hard' ? 'rgba(248,113,113,0.4)' : 'rgba(251,191,36,0.4)'}`,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontFamily: 'Syne, sans-serif', fontSize: '13px', fontWeight: '700',
-                  color: difficulty === 'Easy' ? '#34d399' :
-                         difficulty === 'Hard' ? '#f87171' : '#fbbf24',
-                }}>{timePerQ}s</div>
-                <div>
-                  <p style={{ fontSize: '12px', color: '#fff' }}>
-                    Auto-selected for <strong>{difficulty}</strong>
-                  </p>
-                  <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)' }}>
-                    Total: ~{Math.ceil((timePerQ * numQ) / 60)} min for {numQ} questions
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
+       
 
           {/* Number of questions */}
           <div>
