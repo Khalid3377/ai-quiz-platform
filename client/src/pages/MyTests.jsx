@@ -22,7 +22,7 @@ export default function MyTests() {
   const loadMyTests = async () => {
     try {
       const token = localStorage.getItem('token');
-      const base  = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+      const base  = process.env.REACT_APP_API_URL || 'https://ai-quiz-backend-dbhw.onrender.com/api';
       const { data } = await axios.get(
         `${base}/quizzes/my-tests`,
         { headers: { Authorization: `Bearer ${token}` } }

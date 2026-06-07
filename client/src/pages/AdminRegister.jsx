@@ -19,7 +19,7 @@ export default function AdminRegister() {
     setError('');
     try {
       const { data } = await axios.post(
-        'http://localhost:5000/api/auth/register-admin', form
+        'https://ai-quiz-backend-dbhw.onrender.com/api/auth/register-admin', form
       );
       localStorage.setItem('token', data.token);
       localStorage.setItem('user',  JSON.stringify(data.user));
